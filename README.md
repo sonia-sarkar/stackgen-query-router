@@ -35,18 +35,20 @@ keyword scoring (agents_config.json)
 
 | Agent | Keywords | Live mode |
 |---|---|---|
-| `GitHubAgent` | pull request, pr, github, repo | Yes — set `GITHUB_TOKEN` |
+| `GitHubAgent` | pull request, pr, github, repo | Yes — set `GITHUB_TOKEN` + `GITHUB_REPO` |
 | `LinearAgent` | issue, assigned, ticket, linear | No (mocked only) |
 
 Add agents or change keywords by editing `agents_config.json` — no Python changes needed.
 
 ### GitHubAgent live mode
 
-When `GITHUB_TOKEN` is set, GitHubAgent fetches real open pull requests for the authenticated user across all their repos. Without it, a hardcoded example response is returned — behaviour is identical from the router's perspective.
+When both `GITHUB_TOKEN` and `GITHUB_REPO` are set, GitHubAgent fetches real open pull requests from that specific repo. Scoped to one repo rather than the full account because a real agent would typically watch a specific project, not a user's entire GitHub history.
 
-To generate a token: GitHub → Settings → Developer settings → Personal access tokens → Generate new token. A classic token with the `repo` scope (or a fine-grained token with **Pull requests: Read** on the target repos) is sufficient.
+`GITHUB_REPO` format: `owner/repo`, e.g. `sonia-sarkar/cenrl-son`.
 
-If the live API call fails for any reason (bad token, rate limit, network error), GitHubAgent logs the failure and falls back to the mocked response automatically — the CLI never crashes.
+If `GITHUB_TOKEN` is set but `GITHUB_REPO` is missing, GitHubAgent logs the missing config and falls back to the mocked response rather than crashing or scanning all repos. Same fallback applies if the live API call fails for any reason (bad token, wrong repo name, rate limit, network error).
+
+To generate a token: GitHub → Settings → Developer settings → Personal access tokens → Generate new token. A classic token with the `repo` scope, or a fine-grained token with **Pull requests: Read** on the target repo, is sufficient.
 
 LinearAgent is mocked-only. A live integration would require a Linear workspace with real data and a Linear API key, which is out of scope here.
 
@@ -63,8 +65,9 @@ pip install -r requirements.txt
 Optional environment variables:
 
 ```bash
-export GITHUB_TOKEN=ghp_...          # enables live GitHub pull request data
-export ANTHROPIC_API_KEY=sk-ant-...  # enables LLM escalation for ambiguous queries
+export GITHUB_TOKEN=ghp_...                   # required for live GitHub data
+export GITHUB_REPO=owner/repo                 # required for live GitHub data (e.g. sonia-sarkar/cenrl-son)
+export ANTHROPIC_API_KEY=sk-ant-...           # enables LLM escalation for ambiguous queries
 ```
 
 ## Usage
