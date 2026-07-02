@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from agents import GitHubAgent, LinearAgent
 
 AGENT_CLASSES = {
@@ -17,7 +18,10 @@ def _load_config() -> dict:
 def _score(query: str, config: dict) -> dict:
     lowered = query.lower()
     return {
-        name: sum(1 for kw in keywords if kw in lowered)
+        name: sum(
+            1 for kw in keywords
+            if (re.search(rf"\b{re.escape(kw)}\b", lowered) if " " not in kw else kw in lowered)
+        )
         for name, keywords in config.items()
     }
 
@@ -55,6 +59,8 @@ def route(query: str) -> str:
                     return AGENT_CLASSES[label]().handle(query)
                 if label == "BOTH":
                     return _multi_intent_response(query, scores)
+                if label == "NONE":                             
+                    return "I cannot answer this question."
             except Exception as exc:
                 print(f"[ROUTER] LLM escalation failed ({exc}), falling back")
         return _multi_intent_response(query, scores)
