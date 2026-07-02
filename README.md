@@ -33,12 +33,26 @@ keyword scoring (agents_config.json)
 
 ## Agents
 
-| Agent | Keywords |
-|---|---|
-| `GitHubAgent` | pull request, pr, github, repo |
-| `LinearAgent` | issue, assigned, ticket, linear |
+| Agent | Keywords | Live mode |
+|---|---|---|
+| `GitHubAgent` | pull request, pr, github, repo | Yes — set `GITHUB_TOKEN` |
+| `LinearAgent` | issue, assigned, ticket, linear | No (mocked only) |
 
 Add agents or change keywords by editing `agents_config.json` — no Python changes needed.
+
+### GitHubAgent live mode
+
+When `GITHUB_TOKEN` is set, GitHubAgent fetches real open pull requests for the authenticated user across all their repos. Without it, a hardcoded example response is returned — behaviour is identical from the router's perspective.
+
+To generate a token: GitHub → Settings → Developer settings → Personal access tokens → Generate new token. A classic token with the `repo` scope (or a fine-grained token with **Pull requests: Read** on the target repos) is sufficient.
+
+If the live API call fails for any reason (bad token, rate limit, network error), GitHubAgent logs the failure and falls back to the mocked response automatically — the CLI never crashes.
+
+LinearAgent is mocked-only. A live integration would require a Linear workspace with real data and a Linear API key, which is out of scope here.
+
+### Zero-setup mode
+
+The project runs fully with **no environment variables set**. Both agents return realistic hardcoded responses, and all tests pass without any credentials.
 
 ## Setup
 
@@ -46,10 +60,11 @@ Add agents or change keywords by editing `agents_config.json` — no Python chan
 pip install -r requirements.txt
 ```
 
-Set `ANTHROPIC_API_KEY` to enable LLM escalation (optional):
+Optional environment variables:
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
+export GITHUB_TOKEN=ghp_...          # enables live GitHub pull request data
+export ANTHROPIC_API_KEY=sk-ant-...  # enables LLM escalation for ambiguous queries
 ```
 
 ## Usage
