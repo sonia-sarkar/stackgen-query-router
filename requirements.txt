@@ -1,2 +1,3 @@
 anthropic
+PyGithub
 pytest
