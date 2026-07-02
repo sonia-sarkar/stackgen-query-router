@@ -1,4 +1,4 @@
 {
-    "GitHubAgent": ["pull request", "pr", "github", "repo"],
-    "LinearAgent": ["issue", "assigned", "ticket", "linear"]
-}
+    "GitHubAgent": ["pull request", "pr", "github", "repo", "merge", "commit", "branch", "review", "approve"],
+    "LinearAgent": ["issue", "assigned", "ticket", "linear", "backlog", "sprint", "in progress", "task", "priority"]
+  }

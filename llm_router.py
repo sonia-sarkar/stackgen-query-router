@@ -12,12 +12,10 @@ _SYSTEM = (
 
 def classify_with_llm(query: str) -> str:
     client = anthropic.Anthropic()
-    with client.messages.stream(
-        model="claude-opus-4-8",
-        max_tokens=1024,
-        thinking={"type": "adaptive"},
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=20,
         system=_SYSTEM,
         messages=[{"role": "user", "content": query}],
-    ) as stream:
-        message = stream.get_final_message()
+    )
     return next(b.text for b in message.content if b.type == "text").strip()
