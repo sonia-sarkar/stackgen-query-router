@@ -1,0 +1,4 @@
+{
+    "GitHubAgent": ["pull request", "pr", "github", "repo"],
+    "LinearAgent": ["issue", "assigned", "ticket", "linear"]
+}
