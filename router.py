@@ -20,7 +20,7 @@ def _score(query: str, config: dict) -> dict:
     return {
         name: sum(
             1 for kw in keywords
-            if (re.search(rf"\b{re.escape(kw)}\b", lowered) if " " not in kw else kw in lowered)
+            if (re.search(rf"\b{re.escape(kw)}s?\b", lowered) if " " not in kw else kw in lowered)
         )
         for name, keywords in config.items()
     }
